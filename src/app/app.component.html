@@ -1,0 +1,86 @@
+<div class="shell">
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">AC</span>
+      <div>
+        <h1>Automation Console</h1>
+        <p class="tagline">B2B workflow automation — built in Angular, same day.</p>
+      </div>
+    </div>
+    <button class="run-btn" (click)="runAll()">Run all active rules</button>
+  </header>
+
+  <section class="kpis">
+    <div class="kpi-card">
+      <span class="kpi-label">Active rules</span>
+      <span class="kpi-value">{{ engine.activeCount() }} / {{ engine.rules().length }}</span>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-label">Total executions</span>
+      <span class="kpi-value">{{ engine.totalRuns() | number }}</span>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-label">Avg. latency</span>
+      <span class="kpi-value">{{ engine.avgLatency() }}ms</span>
+    </div>
+  </section>
+
+  <section class="rules">
+    <h2>Rules</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Trigger</th>
+          <th>Condition</th>
+          <th>Action</th>
+          <th>Runs</th>
+          <th>Last run</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (rule of engine.rules(); track rule.id) {
+          <tr [class.disabled]="!rule.enabled">
+            <td>{{ rule.name }}</td>
+            <td><span class="pill">{{ rule.trigger }}</span></td>
+            <td class="mono">{{ rule.condition }}</td>
+            <td><span class="pill action">{{ rule.action }}</span></td>
+            <td>{{ rule.runsCount | number }}</td>
+            <td>{{ rule.lastRunAt ? (rule.lastRunAt | date: 'short') : '—' }}</td>
+            <td>
+              <button class="toggle" [class.on]="rule.enabled" (click)="toggle(rule.id)">
+                {{ rule.enabled ? 'Enabled' : 'Disabled' }}
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </section>
+
+  <section class="log">
+    <h2>Run log</h2>
+    @if (engine.log().length === 0) {
+      <p class="empty">No runs yet. Hit "Run all active rules".</p>
+    } @else {
+      <ul>
+        @for (entry of engine.log(); track entry.id) {
+          <li [class]="entry.status">
+            <span class="log-time">{{ entry.timestamp | date: 'HH:mm:ss' }}</span>
+            <span class="log-rule">{{ entry.ruleName }}</span>
+            <span class="log-detail">{{ entry.detail }}</span>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+
+  <footer (click)="onFooterClick()">
+    <p>Automation Console — Angular {{ '' }}· built by Cedric Conday, Conday Digital</p>
+  </footer>
+
+  @if (eggMessage()) {
+    <div class="toast">{{ eggMessage() }}</div>
+  }
+</div>
