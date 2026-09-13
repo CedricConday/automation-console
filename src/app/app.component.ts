@@ -9,7 +9,6 @@ import { AutomationEngineService } from './automation-engine.service';
 
 @Component({
   selector: 'ac-root',
-  standalone: true,
   imports: [CommonModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
